@@ -1,0 +1,3 @@
+[submodule "amonguscapture"]
+	path = amonguscapture
+	url = https://github.com/hp3721/amonguscapture.git
