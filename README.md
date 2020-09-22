@@ -1,40 +1,38 @@
-Roles:
-@everyone: no speak permissions in among us channels
-Crewmate: "/" perm for speak permissions in among us vc
+# Sabotage
+An among us monitoring bot that will automatically mute players during tasks and unmute them during discussions and lobby
+This project uses `amonguscapture` (the [python rewrite](https://github.com/hp3721/amonguscapture)) as a submodule for identifying the player through game memory.
 
-Prereq
-- all users need to have a diff name
-- dont start the bot midgame
+## Setup
+- This bot needs to run on a Windows PC which is participating in the among us game.
+- The bot has to be started while you are in the menu screen or in the lobby. (It cannot be started mid-game)
+- This bot needs Python 3.6+ to run. Please install it [here](https://www.python.org/downloads/)
+- Install the necessary libraries using the following command
+```
+$ pip install -r requirements.txt
+```
+- Create a role for your among us players. 
+- Create a voice channel in the server with permissions for `@everyone` role to NOT speak and make sure the among us players role can speak in that VC
+- Follow this guide to create a discord bot and get the bot token and invite the bot: https://discordpy.readthedocs.io/en/latest/discord.html
+- Make sure you give these permissions to the bot in the OAuth scope while using the guide above:
+![Scope](https://i.imgur.com/liZq6tG.png)
+- Rename `config.json.sample` to `config.json` and fill up all the fields.
 
-StartGame: (command)
-- cog init variable if game has started
-- store game object as cog variable
-- start the loop function
+## Usage
+To use the bot:
+- First all players need to register their ingame name that they use. They can re-register if the name changes too, but this needs to be done only once and not for every game
+- Register ingame names using the command `/register <ingamename>`
+- If you want the bot to start monitoring your game, use the `/monitor` command (once the person running the bot has started their game). If you don't do this, the bot wont interfere with your mute state
+- You can tell the bot to stop monitoring using the `/stopmonitor` command
+- The person running the bot can also use `/hook` to ensure that the game is hooked
 
-StopGame: (command)
-- set StartGame to false
-- stop the loop
-- clear the game object from cog variable
+## Features:
+- During tasks, all players are server muted
+- During lobby and menu, all players are server unmuted
+- During meeting discussions, only the players who are alive are unmuted
 
-Register:
-- allow multiple registrations
-- storage: {<discordid>: <playername>}
-- on multiple registration, just update the dict with new playername
-- if registrations.values() already has the playername someone is trying to register, then tell them to fuck off
-- on register give crewmate role
+## Contributing
+To contribute to the repository, you can submit a pull request to the repository. Try to follow a format similar to the current codebase. All contributions are greatly appreciated!
 
-Unregister:
-- yeet them out the dict
-
-Loop func:
-- check every 0.25 secs
-- check state
-- if state is same as old state: do nothing
-- if state is changed and state is discussion: server unmute people who arnt dead
-- if state is changed and state is task: server mute everyone registered in vc
-- if state is changed and state is lobby: server unmute everyone registered in vc
-
-on voice join event handler:
-- if startgame is false: server unmute if registered
-- if startgame is true and person is server muted and person is not dead and game state is not tasks: server unmute
-- if startgame is true and person is not server muted: if person is dead: server mute or if game state is tasks: server mute
+## Credits:
+- [@denverquane](https://github.com/denverquane) for writing the original amonguscapture repository to read game state from process ram
+- [@hp3721](https://github.com/hp3721) for porting the original amonguscapture repository over to python.
