@@ -16,6 +16,7 @@ $ pip install -r requirements.txt
 - Make sure you give these permissions to the bot in the OAuth scope while using the guide above:
 ![Scope](https://i.imgur.com/liZq6tG.png)
 - Rename `config.json.sample` to `config.json` and fill up all the fields.
+- Run the bot using `python sabotage.py`
 
 ## Usage
 To use the bot:
