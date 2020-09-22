@@ -6,6 +6,10 @@ This project uses `amonguscapture` (the [python rewrite](https://github.com/hp37
 - This bot needs to run on a Windows PC which is participating in the among us game.
 - The bot has to be started while you are in the menu screen or in the lobby. (It cannot be started mid-game)
 - This bot needs Python 3.6+ to run. Please install it [here](https://www.python.org/downloads/)
+- Clone this repository along with the submodule using the following command
+```
+$ git clone https://github.com/architdate/Sabotage.git --recursive
+```
 - Install the necessary libraries using the following command
 ```
 $ pip install -r requirements.txt
