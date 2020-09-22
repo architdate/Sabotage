@@ -42,7 +42,7 @@ class AmongUsGame():
         return bool(self.ProcessMemory.ReadPointer(self.UnityPlayerPtr, [0x12A7A14, 0x64, 0x54, 0x18], 1)[0])
 
     def getMeetingHudState(self):
-        return self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0xDA58D0, 0x5C, 0, 0x84], 1)[0]
+        return struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0xDA58D0, 0x5C, 0, 0x84], 4))[0]
 
     def getState(self):
         if not self.inGame():
@@ -74,6 +74,8 @@ class AmongUsGame():
             players = self.getPlayers()
         else: 
             players = pinfo
+        if players == None:
+            return []
         for p in players:
             if p.IsDead > 0:
                 dead.append(p)

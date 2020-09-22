@@ -26,9 +26,13 @@ class GameHandler(commands.Cog):
         with open("registered.json") as c:
             registered = json.load(c)
         if before.channel == None and after.channel == discord.utils.get(self.bot.main_server.voice_channels, id=self.config["GAME_CHANNEL"]):
+            if str(member.id) not in registered.keys():
+                return
             if not self.ongoing and member.voice.mute and str(member.id) in registered.keys():
                 await member.edit(mute=False)
-            elif self.ongoing and member in self.get_discord_members(self.game.getDeadPlayers(), self.bot.main_server):
+            elif self.ongoing and str(member.id) in registered.keys() and self.game.getState() == AmongUsGame.GameState.LOBBY:
+                await member.edit(mute=False)
+            elif self.game.getState() != AmongUsGame.GameState.LOBBY and member in self.get_discord_members(self.game.getDeadPlayers(), self.bot.main_server):
                 await member.edit(mute=True)
             elif self.ongoing and str(member.id) in registered.keys() and self.game.getState() == AmongUsGame.GameState.TASKS:
                 await member.edit(mute=True)
@@ -121,6 +125,7 @@ class GameHandler(commands.Cog):
         vcm_ids = [m.id for m in vcm]
         state = self.game.getState()
         if state != self.game.oldState:
+            print(self.game.getMeetingHudState())
             with open("registered.json") as r:
                 registered = json.load(r)
             if state == AmongUsGame.GameState.DISCUSSION:
