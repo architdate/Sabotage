@@ -33,16 +33,25 @@ class AmongUsGame():
         self.playerColors = ["red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime"]
 
     def inGame(self):
-        return bool(self.ProcessMemory.ReadPointer(self.UnityPlayerPtr, [0x127B310, 0xF4, 0x18, 0xA8], 1)[0])
+        return self.gamestate() == 2
+
+    def gamestate(self):
+        return self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0x1468840, 0x5C, 0, 0x64], 1)[0]
 
     def isHooked(self):
         return self.hooked
 
     def inMeeting(self):
-        return bool(self.ProcessMemory.ReadPointer(self.UnityPlayerPtr, [0x12A7A14, 0x64, 0x54, 0x18], 1)[0])
+        return self.getMeetingHudState() < 4
 
     def getMeetingHudState(self):
-        return struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0xDA58D0, 0x5C, 0, 0x84], 4))[0]
+        hud = struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0x14686A0, 0x5C, 0], 4))[0]
+        if hud == 0:
+            cache = 0
+        else: cache = struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0x14686A0, 0x5C, 0, 0x8], 4))[0]
+        if cache == 0:
+            return 4
+        return self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0x14686A0, 0x5C, 0, 0x84], 1)[0]
 
     def getState(self):
         if not self.inGame():
@@ -54,7 +63,7 @@ class AmongUsGame():
         return state
 
     def getPlayers(self):
-        allPlayersPtr = struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0xDA5A60, 0x5C, 0, 0x24], 4))[0]
+        allPlayersPtr = struct.unpack("<L", self.ProcessMemory.ReadPointer(self.GameAssemblyPtr, [0x1468864, 0x5C, 0, 0x24], 4))[0]
         if allPlayersPtr == 0:
             return None
         allPlayers = struct.unpack("<L", self.ProcessMemory.ReadPointer(allPlayersPtr, [0x8], 4))[0]
@@ -100,7 +109,7 @@ class AmongUsGame():
             state = self.getState()
             dead = [self.ProcessMemory.ReadString(p.PlayerName) for p in self.getDeadPlayers(allPlayerInfos)]
             imposters = [self.ProcessMemory.ReadString(p.PlayerName) for p in self.getImposters(allPlayerInfos)]
-            print(f"State: {state}, Dead: {dead}, Imposters: {imposters}")
+            print(f"State: {state} ({self.gamestate()}), MeetingHUD: {self.getMeetingHudState()}, Dead: {dead}, Imposters: {imposters}")
             self.oldState = state
             sleep(0.25)
 
